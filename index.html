@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nano-banana-prompter — סקיל חדש מאימפרוב</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue: #2563eb;
+      --blue-light: #3b82f6;
+      --green: #4ade80;
+      --bg: #07090f;
+      --surface: #0f1420;
+      --surface2: #161c2e;
+      --border: rgba(59,130,246,0.15);
+      --text: #e8edf8;
+      --muted: #8492ad;
+    }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Heebo', Arial, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(37,99,235,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(37,99,235,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 500px;
+      background: radial-gradient(ellipse, rgba(37,99,235,0.18) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2.5rem;
+    }
+
+    .header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      text-align: center;
+    }
+
+    .logo {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 18px rgba(37,99,235,0.5));
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(37,99,235,0.15);
+      border: 1px solid rgba(37,99,235,0.3);
+      border-radius: 100px;
+      padding: 0.3rem 0.9rem;
+      font-size: 0.75rem;
+      color: var(--blue-light);
+      letter-spacing: 0.03em;
+      font-weight: 500;
+    }
+    .badge span { font-size: 0.9rem; }
+
+    .title {
+      font-size: clamp(2rem, 6vw, 2.8rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #fff 30%, #93c5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 1.05rem;
+      font-weight: 400;
+      line-height: 1.6;
+    }
+
+    .card {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.6rem;
+    }
+
+    .card-intro {
+      font-size: 1.05rem;
+      line-height: 1.75;
+      color: var(--text);
+    }
+    .card-intro strong {
+      color: #93c5fd;
+      font-weight: 600;
+    }
+
+    .download-wrap {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      width: 100%;
+      max-width: 420px;
+      padding: 1.1rem 2rem;
+      background: linear-gradient(135deg, var(--blue) 0%, #1e40af 100%);
+      color: #fff;
+      font-family: 'Heebo', Arial, sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-decoration: none;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 30px rgba(37,99,235,0.45), 0 1px 0 rgba(255,255,255,0.1) inset;
+      transition: transform 0.15s, box-shadow 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-download::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 60%);
+    }
+
+    .btn-download:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 40px rgba(37,99,235,0.55), 0 1px 0 rgba(255,255,255,0.1) inset;
+    }
+
+    .btn-download:active {
+      transform: translateY(0);
+    }
+
+    .download-meta {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .cta-block {
+      position: relative;
+      width: 100%;
+      max-width: 540px;
+      margin: 0 auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.2rem 1.8rem;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .cta-strip {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--blue), var(--blue-light), var(--green));
+    }
+
+    .cta-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.9rem;
+      position: relative;
+    }
+
+    .cta-inner > * { position: relative; z-index: 1; }
+
+    .cta-eyebrow {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--blue-light);
+      font-weight: 700;
+    }
+
+    .cta-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.4;
+      max-width: 440px;
+    }
+
+    .cta-desc {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 460px;
+    }
+
+    .btn-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.55rem;
+      padding: 0.95rem 2rem;
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+      color: #fff;
+      font-family: 'Heebo', Arial, sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      text-decoration: none;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 24px rgba(37,99,235,0.3), 0 1px 0 rgba(255,255,255,0.12) inset;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 55%);
+      pointer-events: none;
+    }
+
+    .btn-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 34px rgba(37,99,235,0.45), 0 1px 0 rgba(255,255,255,0.12) inset;
+    }
+    .btn-cta:active { transform: translateY(0); }
+    .btn-cta svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+    .cta-small { font-size: 0.72rem; color: var(--muted); }
+
+    .install-toggle {
+      width: 100%;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    .install-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      width: 100%;
+      padding: 0.85rem 1.5rem;
+      background: rgba(37,99,235,0.12);
+      border: 1.5px solid rgba(37,99,235,0.35);
+      border-radius: 12px;
+      color: #93c5fd;
+      font-family: 'Heebo', Arial, sans-serif;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+
+    .install-trigger:hover {
+      color: var(--text);
+      border-color: rgba(37,99,235,0.5);
+      background: rgba(37,99,235,0.15);
+    }
+
+    .install-trigger svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      transition: transform 0.3s ease;
+    }
+
+    .install-toggle.open .install-trigger svg {
+      transform: rotate(180deg);
+    }
+
+    .install-panel {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.3s ease;
+      margin-top: 0;
+    }
+
+    .install-toggle.open .install-panel {
+      max-height: 600px;
+      opacity: 1;
+      margin-top: 0.8rem;
+    }
+
+    .install-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.4rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .install-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+      font-size: 0.88rem;
+      color: #c8d5f0;
+      line-height: 1.6;
+    }
+
+    .install-step-num {
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      border-radius: 6px;
+      color: #93c5fd;
+      background: rgba(37,99,235,0.2);
+      border: 1px solid rgba(37,99,235,0.3);
+      margin-top: 0.1rem;
+    }
+
+    .install-step .hl { color: #fff; font-weight: 600; }
+
+    .install-prereq {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.55;
+      padding-top: 0.5rem;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .install-prereq svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      color: var(--blue-light);
+      margin-top: 0.1rem;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--muted);
+      opacity: 0.6;
+    }
+
+    @media (max-width: 480px) {
+      .page { padding: 2rem 1rem 4rem; gap: 2rem; }
+      .card { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <img class="logo" src="logo-white.png" alt="Aimprove" />
+    <div class="badge"><span>🍌</span> סקיל חדש זמין</div>
+    <h1 class="title">nano-banana-prompter</h1>
+    <p class="subtitle">קיבלת גישה לסקיל חדש מאימפרוב 👋</p>
+  </div>
+
+  <!-- ════════ CTA ════════ -->
+  <div class="cta-block">
+    <div class="cta-strip"></div>
+    <div class="cta-inner">
+      <div class="cta-eyebrow">ספריית Super Skills</div>
+      <h2 class="cta-title">הסקיל הזה הוא אחד מתוך ספרייה שלמה.<br/>רוצים את כולם?</h2>
+      <p class="cta-desc">חברי טירונות סוכנים מקבלים גישה מלאה — סקילים שנבנו מתוך עבודה אמיתית, לא טריקים מהרשת. חלק מתוכנית שלמה לבנות כל דבר שתדמיינו.</p>
+      <a class="btn-cta" href="https://wa.me/972515079762?text=%D7%90%D7%A0%D7%99%20%D7%A8%D7%95%D7%A6%D7%94%20%D7%9C%D7%91%D7%93%D7%95%D7%A7%20%D7%94%D7%AA%D7%90%D7%9E%D7%94%20%D7%9C%D7%AA%D7%95%D7%9B%D7%A0%D7%99%D7%AA%20%D7%90%D7%99%D7%99%D7%92%D7%A0%D7%98%D7%99%D7%9D">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        לבדוק התאמה לטירונות סוכנים
+      </a>
+      <span class="cta-small">5 מפגשי בנייה · קבוצה מצומצמת · סינון כניסה</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="card-intro">
+      <strong>מה זה:</strong> סקיל ל-Claude שיוצר פרומפטים מקצועיים לתמונות במודל <strong>nano banana</strong> (Gemini image). לוקח כוונה גולמית שלרוב לא מנוסחת היטב, ומחשב ממנה בריף ויזואלי שלם — מסיק את הממדים החסרים, שואל רק כשבאמת לא ברור, ומחזיר פרומפט מוכן להעתקה. עובד גם ליצירת תמונה חדשה וגם לעריכת תמונה קיימת.
+    </p>
+  </div>
+
+  <!-- ════════ DOWNLOAD + INSTALL ════════ -->
+  <div class="download-wrap">
+    <a class="btn-download" href="nano-banana-prompter.skill" download>
+      להורדת הסקיל
+    </a>
+    <span class="download-meta">💻 מומלץ לפתוח מהמחשב</span>
+  </div>
+
+  <div class="install-toggle" id="installToggle">
+    <button class="install-trigger" onclick="document.getElementById('installToggle').classList.toggle('open')">
+      לחצו כאן לגלות איך מתקינים את הסקיל בקלוד
+    </button>
+    <div class="install-panel">
+      <div class="install-card">
+        <div class="install-step">
+          <div class="install-step-num">1</div>
+          <span>נכנסים ל-<span class="hl">claude.ai</span> ומוודאים שאתם מחוברים</span>
+        </div>
+        <div class="install-step">
+          <div class="install-step-num">2</div>
+          <span>הולכים ל-<span class="hl">Customize</span> בתפריט הצד ← לוחצים על <span class="hl">Skills</span></span>
+        </div>
+        <div class="install-step">
+          <div class="install-step-num">3</div>
+          <span>לוחצים על כפתור ה-<span class="hl">+</span> ← בוחרים <span class="hl">+ Create skill</span></span>
+        </div>
+        <div class="install-step">
+          <div class="install-step-num">4</div>
+          <span>בוחרים <span class="hl">Upload a skill</span> ← בוחרים את קובץ ה-ZIP שהורדתם</span>
+        </div>
+        <div class="install-step">
+          <div class="install-step-num">5</div>
+          <span>הסקיל יופיע ברשימה — מוודאים שהמתג שלו <span class="hl">דלוק</span> ✓</span>
+        </div>
+        <div class="install-prereq">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>דרישה: צריך שתהיה מופעלת האפשרות <strong style="color:#c8d5f0">Code execution</strong> ב-Settings&nbsp;›&nbsp;Capabilities. בלי זה Skills לא יעבדו.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ HOW TO USE (toggle) ════════ -->
+  <div class="install-toggle" id="usageToggle">
+    <button class="install-trigger" onclick="document.getElementById('usageToggle').classList.toggle('open')">
+      לחצו כאן לגלות איך משתמשים בסקיל
+    </button>
+    <div class="install-panel">
+      <div class="install-card">
+        <div class="install-step">
+          <div class="install-step-num">1</div>
+          <span>נכנסים לשיחה חדשה ב-Claude ומוודאים שהסקיל פעיל</span>
+        </div>
+        <div class="install-step">
+          <div class="install-step-num">2</div>
+          <span>מתארים את התמונה שרוצים, למשל: <code>תכתוב לי פרומפט לתמונה של X</code> או פשוט <code>אני רוצה תמונה של...</code></span>
+        </div>
+        <div class="install-step">
+          <div class="install-step-num">3</div>
+          <span>אם חסר פרט קריטי הוא ישאל שאלה ממוקדת — אחרת הוא ישלים לבד ויחזיר פרומפט מוכן</span>
+        </div>
+        <div class="install-step">
+          <div class="install-step-num">4</div>
+          <span>מעתיקים את הפרומפט ומדביקים ב-nano banana (Gemini image)</span>
+        </div>
+        <div class="install-prereq">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>עובד גם על עריכת תמונה קיימת — הסרה, החלפה, שינוי תאורה, style transfer.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">by אִימפּרוּב · שלהבת ורדי</div>
+
+</div>
+</body>
+</html>
