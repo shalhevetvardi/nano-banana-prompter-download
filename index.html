@@ -522,6 +522,37 @@
   <div class="footer-links"><a href="https://aimprove.co.il/accessibility-statement/">הצהרת נגישות</a></div>
 
 </div>
+<!-- EqualWeb accessibility widget -->
+<script>
+window.interdeal = {
+    get sitekey (){ return "0d1fa1a888fa2704d134c3ba06291add"} ,
+    get domains(){
+        return {
+            "js": "https://cdn.equalweb.com/",
+            "acc": "https://access.equalweb.com/"
+        }
+    },
+    "Position": "left",
+    "Menulang": "HE",
+    "draggable": true,
+    "btnStyle": {
+        "vPosition": ["80%", "80%"],
+        "margin": ["0", "0"],
+        "scale": ["0.5", "0.5"],
+        "color": { "main": "#1c4bb6", "second": "#ffffff" },
+        "icon": { "outline": false, "outlineColor": "#ffffff", "type": 1, "shape": "circle" }
+    }
+};
+(function(doc, head, body){
+    var coreCall             = doc.createElement("script");
+    coreCall.src             = interdeal.domains.js + "core/5.2.8/accessibility.js";
+    coreCall.defer           = true;
+    coreCall.integrity       = "sha512-ka0NgF7zDksnhoZ5ZCKlm+t0F7KTih5lCfXwuzQDnrwu/EdKZSsJotoJvQPd0cuVmV63s0q2cgoUjeki688PuQ==";
+    coreCall.crossOrigin     = "anonymous";
+    coreCall.setAttribute("data-cfasync", true );
+    body? body.appendChild(coreCall) : head.appendChild(coreCall);
+})(document, document.head, document.body);
+</script>
 <script src="https://r.aimprove.co.il/consent-banner.js" data-src="nano-banana-prompter"></script>
 </body>
 </html>
