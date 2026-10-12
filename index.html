@@ -396,6 +396,19 @@
       opacity: 0.6;
     }
 
+    .footer-links {
+      text-align: center;
+      font-size: 0.78rem;
+    }
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: underline;
+      padding: 0.4rem 0.5rem;
+      display: inline-block;
+    }
+    .footer-links a:hover { color: var(--text); }
+    .footer-links a:focus-visible { outline: 2px solid var(--blue-light); outline-offset: 2px; }
+
     @media (max-width: 480px) {
       .page { padding: 2rem 1rem 4rem; gap: 2rem; }
       .card { padding: 1.5rem; }
@@ -506,6 +519,7 @@
   </div>
 
   <div class="footer">by אִימפּרוּב · שלהבת ורדי</div>
+  <div class="footer-links"><a href="https://aimprove.co.il/accessibility-statement/">הצהרת נגישות</a></div>
 
 </div>
 <script src="https://r.aimprove.co.il/consent-banner.js" data-src="nano-banana-prompter"></script>
